@@ -1,0 +1,10 @@
+/tests/test_aisats_sample_realtimeallocation.py
+/tests/test_flights_view_ongoing.py
+/tests/test_fz_sample.py
+/Pages/Flights_View_List_View_Page.py
+__pycache__/
+*.py[cod]
+/reports/allure-results/
+/pages/Flights_View_List_View_Page.py
+/reports/results.xml
+.env

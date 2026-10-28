@@ -9,7 +9,7 @@ from utils.email_sender import EmailSender
 
 def pytest_addoption(parser):
 
-    parser.addoption("--project", action="store", default="flydubai", help="Project Name")
+    parser.addoption("--project", action="store", default="salzburg", help="Project Name")
     parser.addoption("--env", action="store", default="qa", help="Environment Name")
     parser.addoption("--browser", action="store", default="chromium", help="Browser Name")
 

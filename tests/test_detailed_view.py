@@ -1,7 +1,7 @@
 from playwright.sync_api import expect
 import pytest
 import allure
-from pages.detail_view_page import DetailViewPage
+from pages.Detailed_View_Flight_Card_Page import DetailViewPage
 from utils.logger import get_logger
 import time
 

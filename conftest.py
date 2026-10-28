@@ -1,17 +1,28 @@
 import os
 import pytest
 from playwright.sync_api import sync_playwright
-from pages.base_page import BasePage
-from pages.login_page import LoginPage
+from pages.Base_Page import BasePage
+from pages.Login_Page import LoginPage
 from utils.config import Config
 from utils.email_sender import EmailSender
 
 
 def pytest_addoption(parser):
+    existing = set()
+    for opt in getattr(parser._anonymous, 'options', []):
+        existing.update(opt.names())
+    for grp in getattr(parser, '_groups', []):
+        for opt in getattr(grp, 'options', []):
+            existing.update(opt.names())
 
-    parser.addoption("--project", action="store", default="flydubai", help="Project Name")
-    parser.addoption("--env", action="store", default="qa", help="Environment Name")
-    parser.addoption("--browser", action="store", default="chromium", help="Browser Name")
+    if "--project" not in existing:
+        parser.addoption("--project", action="store", default="flydubai", help="Project Name")
+    if "--env" not in existing:
+        parser.addoption("--env", action="store", default="qa", help="Environment Name")
+    if "--browser" not in existing:
+        parser.addoption("--browser", action="store", default="chromium", help="Browser Name")
+    if "--no-email" not in existing:
+        parser.addoption("--no-email", action="store_true", default=False, help="Disable report email delivery for this run.")
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -64,8 +75,8 @@ def page(request):
 
         yield page
 
-        if (hasattr(request.node, "rep_call")and request.node.rep_call.failed):
-            base.capture_failure_screenshot("Failure Screenshot")
+        if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
+            base.capture_failure_screenshot(flight_name=request.node.name)
 
         context.close()
         browser.close()
@@ -81,6 +92,12 @@ def pytest_sessionstart(session):
 
 
 def pytest_sessionfinish(session, exitstatus):
+
+    if getattr(session.config.option, "collectonly", False):
+        return
+
+    if session.config.getoption("--no-email", default=False):
+        return
 
     project = session.config.getoption("--project")
     env = session.config.getoption("--env")

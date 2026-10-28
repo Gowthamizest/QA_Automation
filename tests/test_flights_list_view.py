@@ -69,6 +69,102 @@ def test_flights_view_ongoing(page):
 
             logger.info("PTS Names List is Displayed for All Flight Cards in Turnaround and Split Flights")
 
+            # Hover on STA
+            sta_element = flight_card.locator(flights_view_ongoing_page.STA)
+
+            if sta_element.count() > 0 and sta_element.first.is_visible():
+
+                sta_element.first.hover()
+                time.sleep(2)
+
+                # Check Onblock Time
+                onblock_time = flight_card.locator(flights_view_ongoing_page.ONBLOCK_TIME)
+
+                if onblock_time.count() > 0 and onblock_time.first.is_visible():
+                    expect(onblock_time.first).to_be_visible()
+                    logger.info(f"Onblock Time is displayed for Flight Card {i + 1}")
+                else:
+                    logger.info(f"Onblock Time is not displayed for Flight Card {i + 1}")
+
+        logger.info("Onblock Time Validation Completed for Ongoing Section")
+
+
+        # Navigate to Departed Section
+
+        departed_section = flights_view_ongoing_page.page.locator(
+            flights_view_ongoing_page.SECTIONS[2]["tab"]
+        )
+
+        expect(departed_section).to_be_visible()
+        departed_section.click()
+
+        flights_view_ongoing_page.flight_are_visible()
+
+        # Checking Offblock Time and Flight Card in Departed Section
+
+        number_of_flights = flights_view_ongoing_page.count_of_flights()
+
+        if number_of_flights > 15:
+            number_of_flights = 15
+
+        for i in range(number_of_flights):
+
+            flight_card = flights_view_ongoing_page.page.locator(flights_view_ongoing_page.FLIGHT_ROW_CARDS).nth(i)
+            expect(flight_card).to_be_visible()
+
+            # Hover on ETD
+            etd_element = flight_card.locator(flights_view_ongoing_page.ETD)
+
+            if etd_element.count() > 0 and etd_element.first.is_visible():
+
+                etd_element.first.hover()
+                time.sleep(2)
+
+                # Check Offblock Time
+                offblock_time = flight_card.locator(flights_view_ongoing_page.OFFBLOCK_TIME)
+
+                if offblock_time.count() > 0 and offblock_time.first.is_visible():
+
+                    expect(offblock_time.first).to_be_visible()
+                    logger.info(f"Offblock Time is displayed for Departed Flight Card {i + 1}")
+
+                else:
+                    logger.info(f"Offblock Time is not displayed for Departed Flight Card {i + 1}")
+
+            # Open Flight Menu for the Same Flight Card
+            flight_menu = flight_card.locator(flights_view_ongoing_page.FLIGHT_MENU_ICON)
+
+            if flight_menu.count() > 0 and flight_menu.first.is_visible():
+                flight_menu.first.click()
+
+                # Check Flight Card Option
+                flight_card_button = flights_view_ongoing_page.page.locator(flights_view_ongoing_page.FLIGHT_CARD_BUTTON)
+
+                if flight_card_button.count() > 0 and flight_card_button.first.is_visible():
+                    logger.info(f"Flight Card Option is displayed for Flight {i + 1}")
+
+                    # Click Flight Card and Verify New Tab
+                    with page.expect_popup() as popup_info:
+                        flight_card_button.first.click()
+
+                    flight_card_page = popup_info.value
+                    flight_card_page.wait_for_load_state("domcontentloaded")
+
+                    expect(flight_card_page.locator("body")).to_be_visible()
+
+                    logger.info(f"Flight Card opened in a new tab for Flight {i + 1}")
+
+                    flight_card_page.close()
+
+                else:
+                    logger.warning(f"Flight Card Option is not displayed for Flight {i + 1}")
+
+            else:
+                logger.warning(f"Flight Menu is not displayed for Flight Card {i + 1}")
+
+        logger.info("Offblock Time and Flight Card Validation Completed for Departed Section")
+
+
             
 
 

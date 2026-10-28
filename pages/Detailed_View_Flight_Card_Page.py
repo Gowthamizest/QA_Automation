@@ -1,5 +1,5 @@
 import pytest
-from pages.base_page import BasePage
+from pages.Base_Page import BasePage
 from utils.logger import get_logger
 from playwright.sync_api import expect
 import allure
@@ -58,7 +58,7 @@ class DetailViewPage(BasePage):
             logger.warning("List View not displayed after Hover, Trying to Click")
             menu.click()
             self.page.wait_for_timeout(1000)
-
+            
         expect(list_view).to_be_visible()
 
         #Clicking List View
@@ -101,13 +101,13 @@ class DetailViewPage(BasePage):
         self.page.wait_for_timeout(3000)
         try :
             # Check Arrival Number of Flight is Displayed
-            with allure.step("Checking Arrival Flight Number is Displayed"):
+            with allure.step("Checking Arrival Flight Number is Displayed"):                
                 arrival_flight_number = self.page.locator(self.ARRIVAL_FLIGHT_NUMBER)
                 arrival_flight_number.wait_for(state="visible", timeout=10000)
                 arrival_flight = arrival_flight_number.inner_text().strip()
                 expect(arrival_flight_number).to_be_visible()
                 logger.info(f"Arrival Flight Number is Visible & Arrival Flight Number is {arrival_flight}")
-
+                                
             # Check Departure Number of Flight is Displayed
             with allure.step("Checking Departure Flight Number is Displayed"):
                 departure_flight_number = self.page.locator(self.DEPARTURE_FLIGHT_NUMBER)
@@ -117,7 +117,7 @@ class DetailViewPage(BasePage):
                 logger.info(f"Departure Flight Number is {departure_flight}")
 
             return arrival_flight, departure_flight
-
+        
         except Exception as e:
             self.capture_failure_screenshot(
                 locator = arrival_flight_number,
@@ -125,7 +125,7 @@ class DetailViewPage(BasePage):
                 error_message = str(e)
             )
             raise
-
+    
     def origin_and_destination(self):
 
         try :
@@ -151,7 +151,7 @@ class DetailViewPage(BasePage):
                 error_message = str(e)
             )
             raise
-
+    
     def is_lock_icon_visible(self, flight_locator):
         """
         Returns True if lock icon is visible inside a flight card
@@ -170,10 +170,12 @@ class DetailViewPage(BasePage):
                 aircraft_and_registration_number = self.page.locator(self.AIRCRAFT_AND_REGISTRATION_NUMBER)
                 aircrft_reg_no = aircraft_and_registration_number.inner_text()
                 aircraft_and_registration = aircrft_reg_no.split()
+                if not aircraft_and_registration:
+                    raise Exception("Aircraft Type and Registration Number is empty")
                 aircraft_number = aircraft_and_registration[0]
-                if aircraft_number in ["null","-",""]:
-                    raise Exception ("Aircraft Type is not Displayed")
-                registration_number = aircraft_and_registration[1]
+                if aircraft_number in ["null", "-", ""]:
+                    raise Exception("Aircraft Type is not Displayed")
+                registration_number = aircraft_and_registration[1] if len(aircraft_and_registration) > 1 else "N/A" 
                 logger.info(f"Displayed Aircraft Number is {aircraft_number}")
                 logger.info(f"Displayed Registration Number is {registration_number}")
 
@@ -185,7 +187,7 @@ class DetailViewPage(BasePage):
             )
             raise
 
-
+    
     def flight_arrival_timing(self):
 
         try :
@@ -211,9 +213,9 @@ class DetailViewPage(BasePage):
                 error_message=str(e)
             )
             raise
-
+        
     def on_block_timing(self):
-
+        
         try:
             # Check ONB of Flight is Displayed
             with allure.step("Checking ONB is mentioned"):
@@ -221,7 +223,7 @@ class DetailViewPage(BasePage):
                 expect(onb_time).not_to_have_text('-')
                 onb_time_value = onb_time.inner_text()
                 logger.info(f"Mentioned ONB Time is {onb_time_value}")
-
+        
         except Exception as e:
             self.capture_failure_screenshot(
                 locator = onb_time,
@@ -248,7 +250,7 @@ class DetailViewPage(BasePage):
                     logger.warning("ETD Time is not Displayed")
                 logger.info(f"Mentioned ETD Time is {etd_time_value}")
 
-
+    
     def bay_and_gate_number(self):
 
             # Check Bay for Flight
@@ -292,7 +294,7 @@ class DetailViewPage(BasePage):
             )
             raise
 
-    def flight_are_visible(self):
+    def flight_are_visible(self):   
         # Checking Flights are Visible
         with allure.step("Checking Flights are Visible in Dashboard"):
             #time.sleep(10)

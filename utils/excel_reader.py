@@ -33,6 +33,11 @@ class ExcelReader:
             raise IndexError("header_row is out of range")
 
         headers = [str(cell).strip() if cell is not None else "" for cell in rows[header_row - 1]]
+        nonblank = [h.casefold() for h in headers if h]
+        if len(nonblank) != len(set(nonblank)):
+            raise ValueError(f"Duplicate column headers in worksheet '{sheet_name}'.")
+        if not any(headers):
+            raise ValueError(f"Worksheet '{sheet_name}' has no column headers in row {header_row}.")
         data_rows: List[Dict[str, object]] = []
 
         for row in rows[header_row:]:

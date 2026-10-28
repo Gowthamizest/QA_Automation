@@ -3,7 +3,7 @@ import re
 import pytest
 import allure
 from playwright.sync_api import expect
-from pages.base_page import BasePage
+from pages.Base_Page import BasePage
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
